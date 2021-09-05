@@ -17,6 +17,7 @@ parse_multipart = ->
   input\set_timeout 5000
 
   current = { content: {} }
+  
   while true
     t, res, err = input\read!
     switch t
@@ -38,7 +39,13 @@ parse_multipart = ->
 
         if current.name
           if current["content-type"] -- a file
-            out[current.name] = current
+            if existing=out[current.name]
+              if existing.content
+                out[current.name]={existing,current}
+              else
+				table.insert out[current.name],current
+			else
+				out[current.name] = current
           else
             out[current.name] = current.content
 

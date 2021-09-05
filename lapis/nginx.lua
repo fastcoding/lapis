@@ -55,7 +55,21 @@ parse_multipart = function()
       current.content = table.concat(current.content)
       if current.name then
         if current["content-type"] then
-          out[current.name] = current
+          do
+            local existing = out[current.name]
+            if existing then
+              if existing.content then
+                out[current.name] = {
+                  existing,
+                  current
+                }
+              else
+                table.insert(out[current.name], current)
+              end
+            else
+              out[current.name] = current
+            end
+          end
         else
           out[current.name] = current.content
         end
